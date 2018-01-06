@@ -26,7 +26,7 @@ config IRQ_WORK
 config BUILDTIME_EXTABLE_SORT
 	bool
 
-menu "General setup"
+menu "GENERAL SETUP"
 
 config BROKEN
 	bool
