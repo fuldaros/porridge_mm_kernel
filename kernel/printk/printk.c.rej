@@ -1,40 +1,28 @@
 --- kernel/printk/printk.c
 +++ kernel/printk/printk.c
-@@ -487,11 +487,11 @@ static int check_syslog_permissions(int type, bool from_file)
- 	 * already done the capabilities checks at open time.
- 	 */
- 	if (from_file && type != SYSLOG_ACTION_OPEN)
--		return 0;
-+		goto ok;
+@@ -2167,13 +2167,24 @@ void console_unlock(void)
+ 	static u64 seen_seq;
+ 	unsigned long flags;
+ 	bool wake_klogd = false;
+-	bool retry;
++	bool do_cond_resched, retry;
  
- 	if (syslog_action_restricted(type)) {
- 		if (capable(CAP_SYSLOG))
--			return 0;
-+			goto ok;
- 		/*
- 		 * For historical reasons, accept CAP_SYS_ADMIN too, with
- 		 * a warning.
-@@ -501,10 +501,11 @@ static int check_syslog_permissions(int type, bool from_file)
- 				     "CAP_SYS_ADMIN but no CAP_SYSLOG "
- 				     "(deprecated).\n",
- 				 current->comm, task_pid_nr(current));
--			return 0;
-+			goto ok;
- 		}
- 		return -EPERM;
+ 	if (console_suspended) {
+ 		up_console_sem();
+ 		return;
  	}
-+ok:
- 	return security_syslog(type);
- }
  
-@@ -1266,10 +1267,6 @@ int do_syslog(int type, char __user *buf, int len, bool from_file)
- 	if (error)
- 		goto out;
++	/*
++	 * Console drivers are called under logbuf_lock, so
++	 * @console_may_schedule should be cleared before; however, we may
++	 * end up dumping a lot of lines, for example, if called from
++	 * console registration path, and should invoke cond_resched()
++	 * between lines if allowable.  Not doing so can cause a very long
++	 * scheduling stall on a slow console leading to RCU stall and
++	 * softlockup warnings which exacerbate the issue with more
++	 * messages practically incapacitating the system.
++	 */
++	do_cond_resched = console_may_schedule;
+ 	console_may_schedule = 0;
  
--	error = security_syslog(type);
--	if (error)
--		return error;
--
- 	switch (type) {
- 	case SYSLOG_ACTION_CLOSE:	/* Close log */
- 		break;
+ 	/* flush buffered message fragment immediately to console */

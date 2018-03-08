@@ -1669,7 +1669,7 @@ static void blk_mq_map_swqueue(struct request_queue *q)
 	unsigned int i;
 	struct blk_mq_hw_ctx *hctx;
 	struct blk_mq_ctx *ctx;
-    struct blk_mq_tag_set *set = q->tag_set;
+	struct blk_mq_tag_set *set = q->tag_set;
 
 	queue_for_each_hw_ctx(q, hctx, i) {
 		cpumask_clear(hctx->cpumask);
@@ -1700,7 +1700,7 @@ static void blk_mq_map_swqueue(struct request_queue *q)
 				blk_mq_free_rq_map(set, set->tags[i], i);
 				set->tags[i] = NULL;
 			}
-            hctx->tags = NULL;
+			hctx->tags = NULL;
 			continue;
 		}
 
@@ -1709,6 +1709,7 @@ static void blk_mq_map_swqueue(struct request_queue *q)
 			set->tags[i] = blk_mq_init_rq_map(set, i);
 		hctx->tags = set->tags[i];
 		WARN_ON(!hctx->tags);
+
 		/*
 		 * Initialize batch roundrobin counts
 		 */

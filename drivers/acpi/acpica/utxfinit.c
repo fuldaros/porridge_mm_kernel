@@ -180,6 +180,7 @@ acpi_status __init acpi_enable_subsystem(u32 flags)
 		if (ACPI_FAILURE(status)) {
 			ACPI_WARNING((AE_INFO, "Could not map the FACS table"));
 			return_ACPI_STATUS(status);
+		}
 	}
 #endif				/* !ACPI_REDUCED_HARDWARE */
 

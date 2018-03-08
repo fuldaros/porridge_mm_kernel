@@ -1066,9 +1066,9 @@ static unsigned int _mt_cpufreq_get_cpu_level(void)
 	/* No efuse,  use clock-frequency from device tree to determine CPU table type! */
 	if (cpu_spd_bond == 0) {
 #ifdef CONFIG_ARCH_MT6753
-		if (cpu_speed >= 1300 && cpu_dvfs_is_extbuck_valid())
+		if (cpu_speed >= 1500 && cpu_dvfs_is_extbuck_valid())
 			lv = CPU_LEVEL_0;	/* 1.5G */
-		else if (cpu_speed >= 1100)
+		else if (cpu_speed >= 1300)
 			lv = CPU_LEVEL_1;	/* 1.3G */
 		else {
 			cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n",
@@ -1086,11 +1086,11 @@ static unsigned int _mt_cpufreq_get_cpu_level(void)
 			lv = CPU_LEVEL_1;
 		}
 #else	/* CONFIG_ARCH_MT6735 */
-		if (cpu_speed >= 1300)
+		if (cpu_speed >= 1500)
 			lv = CPU_LEVEL_0;	/* 1.5G */
-		else if (cpu_speed >= 1100)
+		else if (cpu_speed >= 1300)
 			lv = CPU_LEVEL_1;	/* 1.3G */
-		else if (cpu_speed >= 1000)
+		else if (cpu_speed >= 1100)
 			lv = CPU_LEVEL_2;	/* 1.1G */
 		else {
 			cpufreq_err("No suitable DVFS table, set to default CPU level! clock-frequency=%d\n",
